@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Algorithm Challenge – Year 7 Computing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--bg:#0a1020;--panel:#131c33;--ink:#eaf1ff;--mute:#9fb0d0;--line:#27365c;--cy:#22d3ee;--ok:#34d399;--bad:#fb7185;--gold:#fbbf24;--vi:#a78bfa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3fb;--panel:#fff;--ink:#0d1a33;--mute:#4a5c7d;--line:#c7d3e8;--cy:#0e7490;--ok:#047857;--bad:#be123c;--gold:#b45309;--vi:#6d28d9}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% -10%,color-mix(in srgb,var(--vi) 25%,transparent),transparent 45%),var(--bg);color:var(--ink);font:500 clamp(18px,2.1vw,24px)/1.45 "Space Grotesk","Segoe UI",Verdana,sans-serif;min-height:100vh}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 40px}
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.logo{font-weight:700;font-size:1.1em;color:var(--cy);margin-right:auto}
+.chip{background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:2px 14px;font-weight:700}
+.chip.sc{color:var(--gold)}
+button{font:inherit;color:inherit;cursor:pointer}
+.mute{background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:2px 10px}
+.bar{height:12px;background:var(--panel);border:2px solid var(--line);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--vi));transition:width .5s}
+.steps{display:flex;gap:6px;margin-bottom:16px}
+.steps span{flex:1;text-align:center;font-size:.7em;color:var(--mute);border-bottom:3px solid var(--line);padding-bottom:2px}
+.steps span.on{color:var(--cy);border-color:var(--cy)}.steps span.done{color:var(--ok);border-color:var(--ok)}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:22px;animation:in .35s ease-out}
+@keyframes in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+h1{font-size:2em;line-height:1.1;margin:0 0 6px}h2{margin:0 0 6px;font-size:1.5em}
+.big{font-size:3.2em;line-height:1}
+.mute-t{color:var(--mute)}
+.q{font-size:1.15em;margin:0 0 14px}
+.opts{display:grid;gap:10px}
+.o{text-align:left;background:color-mix(in srgb,var(--ink) 5%,transparent);border:2px solid var(--line);border-radius:12px;padding:12px 16px;white-space:pre-wrap;transition:transform .12s,border-color .12s}
+.o:hover:not(:disabled){border-color:var(--cy);transform:translateX(4px)}
+.o.m{font-family:"JetBrains Mono",Consolas,monospace;font-size:.85em}
+.o.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 22%,transparent)}
+.o.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent);animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+pre{font:700 .78em/1.5 "JetBrains Mono",Consolas,monospace;background:color-mix(in srgb,var(--bg) 70%,transparent);border:2px solid var(--line);border-left:6px solid var(--cy);border-radius:10px;padding:10px 14px;margin:0 0 14px;overflow-x:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.two pre{margin:0 0 12px}
+.fb{margin-top:14px;padding:12px 16px;border-radius:12px;border:2px solid var(--line)}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.go{background:linear-gradient(90deg,var(--cy),var(--vi));color:#06101f;font-weight:700;border:0;border-radius:12px;padding:12px 26px;margin-top:16px}
+.sym{display:block;width:210px;max-width:60%;margin:0 0 12px}
+.stars{font-size:2.4em;letter-spacing:6px}
+.pop{display:inline-block;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}}
+details{margin-top:14px;color:var(--mute);font-size:.8em}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><main>
+<div class="top"><span class="logo">⟨/⟩ Algorithm Challenge</span><span class="chip" id="lv">Level –</span><span class="chip sc" id="sc">⭐ 0</span><button class="mute" id="mu" aria-label="Sound on or off">🔊</button></div>
+<div class="bar"><i id="pb"></i></div><div class="steps" id="st"></div>
+<div id="app"></div></main>
+<script>
+const SY={oval:'<rect x="10" y="20" width="180" height="60" rx="30"/>',para:'<polygon points="40,20 190,20 160,80 10,80"/>',dia:'<polygon points="100,5 192,50 100,95 8,50"/>',rect:'<rect x="12" y="20" width="176" height="60"/>',arr:'<path d="M10 50H170M150 30L180 50L150 70"/>'};
+const sym=k=>`<svg class="sym" viewBox="0 0 200 100" role="img" aria-label="flowchart symbol" fill="color-mix(in srgb,var(--cy) 20%,transparent)" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round">${SY[k]}</svg>`;
+const A=`START
+INPUT a, b, c
+IF a > b THEN
+  IF a > c THEN OUTPUT a ELSE OUTPUT c
+ELSE
+  IF b > c THEN OUTPUT b ELSE OUTPUT c
+END`;
+const B=`START
+INPUT a, b, c
+IF a > b AND a > c THEN OUTPUT a
+ELSE IF b > a AND b > c THEN OUTPUT b
+ELSE OUTPUT c
+END`;
+const AB=`<div class="two"><div><b>Algorithm A</b><pre>${A}</pre></div><div><b>Algorithm B</b><pre>${B}</pre></div></div><p class="mute-t" style="margin:0 0 12px;font-size:.8em">Rule: count every comparison (a > b is one). In an AND, stop as soon as one part is false.</p>`;
+const L=[
+{n:'Algorithm Warm-Up',ic:'🧠',m:6,code:'Same problem, different algorithms',qs:[
+{q:'Problem: <b>find the largest of 4, 8, 6</b>. Ali compares 4 and 8 first. Mia compares 8 and 6 first. Both get 8. Are their algorithms the same?',o:['No – the steps are different, so they are different algorithms','Yes – the answer is the same, so it is the same algorithm','Yes – both use numbers','No – one of them is wrong'],a:0,w:'Different steps = different algorithms, even with the same answer.'},
+{q:'True or False: <b>a problem can have only one correct algorithm.</b>',o:['False','True'],a:0,w:'Many problems have several working algorithms.'},
+{q:'Which algorithm would work for <b>any</b> three numbers?',o:['Compare two numbers, keep the bigger, then compare it with the third','Write the number 8','Add the three numbers together','Always pick the first number'],a:0,w:'"Write 8" only works for 4, 8, 6. A good algorithm works for any data.'},
+{q:'Choose the correct sequence to find the largest of three numbers:',o:['INPUT the numbers → COMPARE them → OUTPUT the largest','OUTPUT the largest → INPUT the numbers → COMPARE them','COMPARE them → OUTPUT the largest → INPUT the numbers','INPUT the numbers → OUTPUT the largest → COMPARE them'],a:0,w:'Input first, process (compare), then output.'},
+{q:'What is an <b>algorithm</b>?',o:['A step-by-step set of instructions to solve a problem','A type of computer','A program that is always written in Python','A picture on a screen'],a:0,w:'An algorithm is a clear set of steps.'}]},
+{n:'Symbol Lab',ic:'🔷',m:8,code:'7CT.02 Flowchart symbols',qs:[
+{s:'oval',q:'Name this flowchart symbol and its job.',o:['Start / End (terminator)','Decision','Input / Output','Process'],a:0,w:'The oval (terminator) shows where the algorithm starts and ends.'},
+{s:'para',q:'This symbol is used for…',o:['INPUT and OUTPUT','Start and End','A Yes/No question','Joining two lines'],a:0,w:'The parallelogram is for INPUT and OUTPUT.'},
+{s:'dia',q:'This symbol is used for…',o:['A decision (a Yes/No question)','INPUT and OUTPUT','Start and End','A calculation'],a:0,w:'The diamond asks a question, such as a > b?'},
+{s:'rect',q:'This symbol is used for…',o:['A process (an action such as largest = a)','A decision','Start / End','OUTPUT'],a:0,w:'The rectangle shows a process or action.'},
+{q:'Two arrows leave a <b>decision</b> diamond. What must be written on them?',o:['Yes and No','Start and End','Input and Output','a and b'],a:0,w:'Yes/No labels show which path to follow.'},
+{q:'Which symbol do you use for <b>OUTPUT "Adult"</b>?',o:['Parallelogram','Diamond','Oval','Rectangle'],a:0,w:'OUTPUT uses the parallelogram.'}]},
+{n:'Pseudocode Detective',ic:'🕵️',m:9,code:'8CT.03 & 7CT.04 Pseudocode and selection',qs:[
+{q:'Which describes <b>good pseudocode</b>?',o:['Short, clear and precise, with start and end shown','Long sentences with lots of detail','Drawn with shapes and arrows','Only works in one programming language'],a:0,w:'Pseudocode is short, clear, precise text with START and END.'},
+{q:'Complete the pseudocode. Which word goes in the gap?',c:'INPUT a, b\nIF a > b THEN\n  OUTPUT a\n____\n  OUTPUT b',o:['ELSE','THEN','INPUT','AND'],a:0,w:'ELSE gives the path for when the condition is false.'},
+{q:'🐞 Find the bug. What is missing?',c:'INPUT a, b\nIF a > b\n  OUTPUT a\nELSE\n  OUTPUT b',o:['THEN after the condition','ELSE','OUTPUT','INPUT'],a:0,w:'It should read: IF a > b THEN.'},
+{q:'Which pseudocode shows: <b>age ≥ 12? Yes → "Adult", No → "Child"</b>?',o:['IF age >= 12 THEN OUTPUT "Adult"\nELSE OUTPUT "Child"','IF age >= 12 THEN OUTPUT "Child"\nELSE OUTPUT "Adult"','OUTPUT "Adult"\nOUTPUT "Child"','IF age THEN "Adult"'],a:0,w:'Yes → Adult (THEN), No → Child (ELSE).'},
+{q:'In a flowchart, <b>IF a > b THEN … ELSE …</b> becomes which symbol with two exits?',o:['Decision diamond','Oval','Parallelogram','Rectangle'],a:0,w:'Selection = a diamond with Yes and No paths.'}]},
+{n:'Trace & Count',ic:'🔍',m:12,code:'Tracing and counting comparisons',qs:[
+{c:'A',q:'Trace <b>Algorithm A</b> with a = 5, b = 9, c = 7. What is the OUTPUT?',o:['9','5','7','2'],a:0,w:'5 > 9 is No, 9 > 7 is Yes, so OUTPUT b = 9.'},
+{c:'A',q:'How many comparisons does <b>A</b> make with 5, 9, 7?',o:['2','1','3','4'],a:0,w:'Two: a > b, then b > c. A always makes 2 comparisons.'},
+{c:'B',q:'How many comparisons does <b>B</b> make with 4, 8, 6?',o:['3','2','4','1'],a:0,w:'a > b (No) → b > a (Yes) → b > c (Yes) = 3.'},
+{c:'B',q:'How many comparisons does <b>B</b> make with 9, 2, 5?',o:['2','3','4','1'],a:0,w:'a > b (Yes) → a > c (Yes) = 2.'},
+{c:'B',q:'How many comparisons does <b>B</b> make with 3, 3, 7?',o:['2','3','4','1'],a:0,w:'a > b (No) → b > a (No, stop) → ELSE = 2. OUTPUT 7.'},
+{c:'B',q:'Test sets: 4,8,6 / 9,2,5 / 3,3,7. What are the <b>total comparisons</b>?',o:['A = 6 and B = 7','A = 6 and B = 6','A = 7 and B = 6','A = 9 and B = 7'],a:0,w:'A: 2+2+2 = 6. B: 3+2+2 = 7.'}]},
+{n:'Boss Level: Efficiency',ic:'🏆',m:10,code:'9CT.08 Compare algorithms using evidence',qs:[
+{q:'Algorithm X uses 3 comparisons every time. Algorithm Y uses 2 every time for the same problem. Which is <b>more efficient</b>?',o:['Y – it uses fewer comparisons','X – it uses more steps','Both are equal','Neither – they are different'],a:0,w:'Fewer steps or comparisons = more efficient.'},
+{q:'Which is the <b>best reason</b>, using evidence from your trace?',o:['A is more efficient because my tally shows 6 comparisons for A and 7 for B – fewer comparisons.','A is more efficient because it is written first.','B is more efficient because it has more lines.','A is more efficient because it looks nicer.'],a:0,w:'A strong reason links efficiency to fewer comparisons, with numbers.'},
+{q:'One advantage of a <b>flowchart</b>:',o:['Symbols and arrows make the decisions easy to see','It is shorter to type','It can run on a computer','It needs no symbols'],a:0,w:'Flowcharts are visual, so the flow is easy to follow.'},
+{q:'One advantage of <b>pseudocode</b>:',o:['Short text that is quick to write and close to real code','It uses colourful shapes','It shows every path as a picture','It cannot contain mistakes'],a:0,w:'Pseudocode is quick to write and easy to turn into code.'},
+{q:'One <b>similarity</b> between a flowchart and pseudocode:',o:['Both show the same algorithm','Both use diamonds','Both are typed text','Both are programming languages'],a:0,w:'Same algorithm; one is visual, the other is text.'}]}
+];
+const $=id=>document.getElementById(id),app=$('app');
+let li=0,qi=0,score=0,right=0,tot=0,done=[],cur=null,tries=0,snd=true,ctx;
+const total=L.reduce((s,l)=>s+l.qs.length,0);
+function beep(ok){if(!snd)return;try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();const t=ctx.currentTime;(ok?[523,659,784]:[220,165]).forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;o.type=ok?'triangle':'sawtooth';g.gain.setValueAtTime(.12,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.18);o.connect(g);g.connect(ctx.destination);o.start(t+i*.1);o.stop(t+i*.1+.2)})}catch(e){}}
+$('mu').onclick=()=>{snd=!snd;$('mu').textContent=snd?'🔊':'🔇'};
+function hud(){$('sc').textContent='⭐ '+score;$('lv').textContent=li<L.length?'Level '+(li+1)+' of '+L.length:'Complete';$('pb').style.width=(tot/total*100)+'%';
+$('st').innerHTML=L.map((l,i)=>`<span class="${i<li?'done':i==li?'on':''}">${l.ic} ${i+1}</span>`).join('')}
+function start(){app.innerHTML=`<div class="card"><div class="big">⟨/⟩</div><h1>Algorithm Challenge</h1><p>Year 7 Computing · 5 levels · ${total} questions. Solve each puzzle to earn ⭐ points and badges.</p><p class="mute-t">First try = 10 points. Second try = 5 points. Rank up by finishing all 5 levels.</p><button class="go" onclick="intro()">Start Level 1</button>
+<details><summary>Teacher notes</summary><p>Aligned to Week 5: 7CT.02, 7CT.04, 8CT.03, 9CT.08. Suggested time: ${L.map((l,i)=>`L${i+1} ${l.m} min`).join(', ')}, then a short wrap-up. Sound: soft chime for correct, low buzz for incorrect (button top right turns it off). Works for pairs or whole-class voting on the board.</p></details></div>`;hud()}
+function intro(){const l=L[li];qi=0;right=0;hud();app.innerHTML=`<div class="card"><div class="big pop">${l.ic}</div><h2>Level ${li+1}: ${l.n}</h2><p class="mute-t">${l.code} · about ${l.m} min · ${l.qs.length} questions</p><button class="go" onclick="ask()">Go!</button></div>`}
+function shuf(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1])}
+function ask(){const q=L[li].qs[qi];tries=0;cur=shuf(q.o.map((t,i)=>({t,ok:i==q.a})));if(q.o.length==2&&/^(True|False)/.test(q.o[1]))cur=q.o.map((t,i)=>({t,ok:i==q.a})).sort((x,y)=>x.t<y.t?1:-1);
+const code=q.c==='A'?AB.replace(/<div class="two">.*?<\/div><\/div>/s,`<div class="two" style="grid-template-columns:1fr"><div><b>Algorithm A</b><pre>${A}</pre></div></div>`):q.c==='B'?AB:q.c?`<pre>${q.c}</pre>`:'';
+app.innerHTML=`<div class="card"><p class="mute-t" style="margin:0 0 8px">Question ${qi+1} of ${L[li].qs.length}</p>${q.s?sym(q.s):''}<p class="q">${q.q}</p>${code}<div class="opts">${cur.map((o,i)=>`<button class="o${o.t.includes('\n')?' m':''}" onclick="pick(${i})">${o.t}</button>`).join('')}</div><div id="fb"></div></div>`}
+function pick(i){const q=L[li].qs[qi],bs=[...document.querySelectorAll('.o')],o=cur[i];
+if(o.ok){beep(1);bs.forEach(b=>b.disabled=true);bs[i].classList.add('ok');const p=tries==0?10:5;score+=p;if(tries==0)right++;tot++;hud();
+$('fb').innerHTML=`<div class="fb ok">✅ Correct! +${p} ⭐<br>${q.w}</div><button class="go" onclick="next()">${qi+1<L[li].qs.length?'Next question':'Finish level'}</button>`}
+else{beep(0);bs[i].classList.add('no');bs[i].disabled=true;tries++;
+if(tries>=2){bs.forEach((b,j)=>{b.disabled=true;if(cur[j].ok)b.classList.add('ok')});tot++;hud();$('fb').innerHTML=`<div class="fb no">❌ Not this time. The answer is highlighted.<br>${q.w}</div><button class="go" onclick="next()">${qi+1<L[li].qs.length?'Next question':'Finish level'}</button>`}
+else $('fb').innerHTML=`<div class="fb no">❌ Not quite. Try again for 5 ⭐.</div>`}}
+function next(){qi++;qi<L[li].qs.length?ask():end()}
+function end(){const n=L[li].qs.length,r=right/n,s=r>=.8?3:r>=.6?2:1;done.push(s);
+app.innerHTML=`<div class="card"><h2>Level ${li+1} complete: ${L[li].n}</h2><p class="stars">${'<span class="pop" style="animation-delay:'+'.0s">⭐</span>'.repeat(0)}${[0,1,2].map(i=>`<span class="pop" style="animation-delay:${i*.25}s;${i<s?'':'filter:grayscale(1);opacity:.3'}">⭐</span>`).join('')}</p><p>${right} of ${n} correct on the first try.</p><button class="go" onclick="li++;li<L.length?intro():fin()">${li+1<L.length?'Next level':'See my results'}</button></div>`;beep(1)}
+function fin(){li=L.length;hud();const max=total*10,p=score/max,rk=p>=.9?['🏆','Algorithm Architect']:p>=.7?['🕵️','Code Detective']:p>=.5?['🐞','Bug Hunter']:['🔧','Rookie Debugger'];
+app.innerHTML=`<div class="card"><div class="big pop">${rk[0]}</div><h1>${rk[1]}</h1><p>Final score: <b>⭐ ${score} / ${max}</b></p><p>${L.map((l,i)=>`${l.ic} ${l.n}: ${'⭐'.repeat(done[i])}`).join('<br>')}</p><button class="go" onclick="location.reload()">Play again</button></div>`}
+start();
+</script></body></html>
